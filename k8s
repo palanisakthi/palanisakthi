@@ -44,8 +44,8 @@ EOF
 
 cat <<EOF | sudo tee /etc/sysctl.d/99-kubernets-cri.conf
 net.bridge.bridge-nf-call-iptables   =1
-nwt.ipv4.ip_forward                  =1
-net.bridge.bridge-nf-call-ip6tables  =1
+nwt.ipv4.ip_forward                             =1
+net.bridge.bridge-nf-call-ip6tables =1
 EOF
 
 sudo sysctl --system
@@ -243,6 +243,13 @@ kubeadm token list
 
 ## generate new token
 kubeadm token create
+
+## control plane node can find the CA cert hash.
+openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outfrom der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+
+
+## get token and paste to worker node
+kubeadm token create --print-join-command
 
 
 
